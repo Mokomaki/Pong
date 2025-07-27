@@ -12,9 +12,6 @@ PongGame::~PongGame()
 
 void PongGame::Run()
 {
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
-
     while (m_Window->isOpen())
     {
         while (const std::optional event = m_Window->pollEvent())
@@ -23,8 +20,29 @@ void PongGame::Run()
                 m_Window->close();
         }
 
-        m_Window->clear();
-		m_Window->draw(shape);
-        m_Window->display();
+        ProcessInput();
+		Draw();
     }
+}
+
+void PongGame::ProcessInput()
+{
+    //if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+}
+
+void PongGame::Draw()
+{
+    m_Window->clear();
+    switch (m_GameState)
+    {
+    case GameState::Running:
+        break;
+    case GameState::Paused:
+        break;
+    case GameState::GameOver:
+        break;
+    default:
+        break;
+    }
+    m_Window->display();
 }
