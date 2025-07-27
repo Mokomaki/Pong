@@ -17,7 +17,7 @@ public:
 	void Run();
 private:
 	void Draw();
-	void ProcessInput();
+	void ProcessEvents();
 private:
 	GameState m_GameState = GameState::Running;
 	PongSettings m_Settings;

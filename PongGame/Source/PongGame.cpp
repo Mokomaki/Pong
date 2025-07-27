@@ -14,30 +14,56 @@ void PongGame::Run()
 {
     while (m_Window->isOpen())
     {
-        while (const std::optional event = m_Window->pollEvent())
-        {
-            if (event->is<sf::Event::Closed>())
-                m_Window->close();
-        }
 
-        ProcessInput();
+
+        ProcessEvents();
 		Draw();
     }
 }
 
-void PongGame::ProcessInput()
+void PongGame::ProcessEvents()
 {
-    //if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+    while (const std::optional event = m_Window->pollEvent())
+    {   
+        //Close event
+        if (event->is<sf::Event::Closed>())
+        {
+            m_Window->close();
+            continue;
+        }
+
+		//Key pressed event
+        if (event->is<sf::Event::KeyPressed>())
+        {
+			continue;
+        }
+		//Key released event
+        if (event->is<sf::Event::KeyReleased>())
+        {
+			//Pause when escape is pressed
+            if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::Escape)
+            {
+                if (m_GameState == GameState::GameOver)
+                    continue;
+				m_GameState = (m_GameState == GameState::Running) ? GameState::Paused : GameState::Running;
+            }
+			continue;
+        }
+    }
 }
 
 void PongGame::Draw()
 {
+	sf::CircleShape shape(50);
+	shape.setFillColor(sf::Color::Red);
+
     m_Window->clear();
     switch (m_GameState)
     {
     case GameState::Running:
         break;
     case GameState::Paused:
+		m_Window->draw(shape);
         break;
     case GameState::GameOver:
         break;
