@@ -53,7 +53,7 @@ void PongGame::Run()
         ProcessEvents();
 		m_Player1->Update(m_deltaTime, *m_Window);
 		m_Player2->Update(m_deltaTime, *m_Window);
-		m_Ball->Update(m_deltaTime, *m_Window);
+		m_Ball->Update(m_deltaTime, *m_Window, *m_Player1, *m_Player2);
 		Draw();
     }
 }

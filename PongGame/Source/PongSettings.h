@@ -15,5 +15,5 @@ struct PongSettings
 
 	//Ball settings
 	const float ballRadius = 45.0f;
-	const float ballSpeed = 1.3f;
+	const float ballSpeed = 1.0f;
 };

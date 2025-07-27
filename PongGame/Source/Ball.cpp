@@ -39,7 +39,7 @@ void Ball::Draw(sf::RenderWindow& window)
 	window.draw(m_Shape);
 }
 
-void Ball::Update(float deltaTime, sf::RenderWindow& window)
+void Ball::Update(float deltaTime, sf::RenderWindow& window,Player& player1, Player& player2)
 {
 
 	m_Position.y += m_Speed * m_Direction.y * deltaTime;
@@ -50,6 +50,32 @@ void Ball::Update(float deltaTime, sf::RenderWindow& window)
 	int windowWidth = window.getSize().x;
 	if (m_Position.y < 0 + m_Radius / windowHeight || m_Position.y > 1 - m_Radius / windowHeight)
 		m_Direction.y *= -1;
+
+	if(m_Position.x < 0.6f && m_Position.x > 0.4f)
+		m_CanTurn = true;
+
+	//Check for collision with players
+	if (m_CanTurn)
+	{
+		if ((m_Position.y * windowHeight) < (player1.GetPosition().y * windowHeight) + m_Radius + player1.GetHalfHeight() &&
+			(m_Position.y * windowHeight) > (player1.GetPosition().y * windowHeight) - m_Radius - player1.GetHalfHeight() &&
+			(m_Position.x * windowWidth) < (player1.GetPosition().x * windowWidth) + m_Radius + player1.GetHalfWidth() &&
+			(m_Position.x * windowWidth) > (player1.GetPosition().x * windowWidth) - m_Radius - player1.GetHalfWidth())
+		{
+			m_Direction.x *= -1;
+			m_CanTurn = false;
+		}
+		else if ((m_Position.y * windowHeight) < (player2.GetPosition().y * windowHeight) + m_Radius + player2.GetHalfHeight() &&
+			(m_Position.y * windowHeight) > (player2.GetPosition().y * windowHeight) - m_Radius - player2.GetHalfHeight() &&
+			(m_Position.x * windowWidth) < (player2.GetPosition().x * windowWidth) + m_Radius + player2.GetHalfWidth() &&
+			(m_Position.x * windowWidth) > (player2.GetPosition().x * windowWidth) - m_Radius - player2.GetHalfWidth())
+		{
+			m_Direction.x *= -1;
+			m_CanTurn = false;
+		}
+	}
+
+
 	if (m_Position.x < 0 + m_Radius / windowWidth || m_Position.x > 1 - m_Radius / windowWidth)
 		Reset();
 }
