@@ -11,5 +11,9 @@ struct PongSettings
 	//Player settings
 	const float playerWidth = 50.0f;
 	const float playerHeight = 250.0f;
-	const float playerSpeed = 1.0f;
+	const float playerSpeed = 1.3f;
+
+	//Ball settings
+	const float ballRadius = 45.0f;
+	const float ballSpeed = 1.3f;
 };

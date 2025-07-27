@@ -2,7 +2,7 @@
 
 PongGame::PongGame()
 {
-	m_Window = new sf::RenderWindow(sf::VideoMode({m_Settings.width, m_Settings.height}), m_Settings.title);
+    m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
 	m_Player1 = new Player
     (
         0.1,
@@ -27,6 +27,15 @@ PongGame::PongGame()
         sf::Keyboard::Key::Up,
         sf::Keyboard::Key::Down
     );
+    m_Ball = new Ball
+    (
+        0.5f,
+        0.5f,
+        m_Settings.ballRadius,
+        sf::Color::White,
+		m_Settings.ballSpeed
+	);
+
 }
 
 PongGame::~PongGame()
@@ -44,6 +53,7 @@ void PongGame::Run()
         ProcessEvents();
 		m_Player1->Update(m_deltaTime, *m_Window);
 		m_Player2->Update(m_deltaTime, *m_Window);
+		m_Ball->Update(m_deltaTime, *m_Window);
 		Draw();
     }
 }
@@ -62,7 +72,14 @@ void PongGame::ProcessEvents()
 		//Key pressed event
         if (event->is<sf::Event::KeyPressed>())
         {
-			continue;
+#if DEBUG
+            if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R)
+            {
+				m_Ball->Reset();
+			    continue;
+            }
+#endif
+            continue;
         }
 		//Key released event
         if (event->is<sf::Event::KeyReleased>())
@@ -87,6 +104,7 @@ void PongGame::Draw()
     case GameState::Running:
 		m_Player1->Draw(*m_Window);
 		m_Player2->Draw(*m_Window);
+		m_Ball->Draw(*m_Window);
         break;
     case GameState::Paused:
         break;

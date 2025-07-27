@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "PongSettings.h"
 #include "Player.h"
+#include "Ball.h"
 
 enum class GameState
 {
@@ -27,4 +28,5 @@ private:
 	GameState m_GameState = GameState::Running;
 	Player* m_Player1;
 	Player* m_Player2;
+	Ball* m_Ball;
 };
