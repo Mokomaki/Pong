@@ -81,10 +81,6 @@ void PongGame::ProcessEvents()
 
 void PongGame::Draw()
 {
-    sf::CircleShape shape(50);
-    shape.setFillColor(sf::Color::Red);
-    shape.setPosition({700.0f, 400.0f});
-
     m_Window->clear();
     switch (m_GameState)
     {
@@ -93,7 +89,6 @@ void PongGame::Draw()
 		m_Player2->Draw(*m_Window);
         break;
     case GameState::Paused:
-		m_Window->draw(shape);
         break;
     case GameState::GameOver:
         break;

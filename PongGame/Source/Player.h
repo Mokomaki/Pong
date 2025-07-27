@@ -10,6 +10,8 @@ public:
 private:
 	sf::Vector2f m_Position;
 	sf::RectangleShape m_Shape;
+	float m_HalfHeight;
+	float m_HalfWidth;
 	float m_Speed;
 	sf::Keyboard::Key m_UpKey;
 	sf::Keyboard::Key m_DownKey;

@@ -3,8 +3,11 @@
 Player::Player(float x, float y, float width, float height, sf::Color color, float outlineThickness, float speed, sf::Keyboard::Key upKey, sf::Keyboard::Key downKey)
 	: m_Position(x, y), m_Speed(speed), m_UpKey(upKey), m_DownKey(downKey)
 {
+	m_HalfHeight = (height + (outlineThickness*2)) / 2;
+	m_HalfWidth = (width + (outlineThickness * 2)) / 2;
+
 	m_Shape.setSize({width, height});
-	m_Shape.setFillColor(sf::Color::White);
+	m_Shape.setFillColor(sf::Color::Black);
 	m_Shape.setOutlineThickness(outlineThickness);
 	m_Shape.setOutlineColor(color);
 	m_Shape.setOrigin({ width / 2, height / 2 });
@@ -32,6 +35,6 @@ void Player::Update(float deltaTime, sf::RenderWindow& window)
 	
 	// Clamp position to stay within the window bounds
 	int windowHeight = window.getSize().y;
-	if (m_Position.y < 0 + (m_Shape.getSize().y/2) / windowHeight) m_Position.y = 0 + (m_Shape.getSize().y/2) / windowHeight;
-	if (m_Position.y > 1 - (m_Shape.getSize().y/2) / windowHeight) m_Position.y = 1 - (m_Shape.getSize().y/2) / windowHeight;
+	if (m_Position.y < 0 + m_HalfHeight / windowHeight) m_Position.y = 0 + m_HalfHeight / windowHeight;
+	if (m_Position.y > 1 - m_HalfHeight / windowHeight) m_Position.y = 1 - m_HalfHeight / windowHeight;
 }
