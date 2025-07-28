@@ -27,6 +27,8 @@ private:
 private:
 	sf::RenderWindow* m_Window;
 	sf::View m_View;
+	sf::Font m_Font;
+	sf::Text* m_ScoreText;
 	PongSettings m_Settings;
 	float m_deltaTime = 0.0f;
 	GameState m_GameState = GameState::Running;

@@ -49,7 +49,8 @@ project "PongGame"
        {
             "sfml-graphics-s-d.lib",
             "sfml-system-s-d.lib",
-            "sfml-window-s-d.lib"
+            "sfml-window-s-d.lib",
+            "freetyped.lib"
        }
 
    filter "configurations:Release"
@@ -61,5 +62,6 @@ project "PongGame"
        {
             "sfml-graphics-s.lib",
             "sfml-system-s.lib",
-            "sfml-window-s.lib"
+            "sfml-window-s.lib",
+            "freetype.lib"
        }

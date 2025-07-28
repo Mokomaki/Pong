@@ -35,7 +35,12 @@ PongGame::PongGame()
         sf::Color::White,
 		m_Settings.ballSpeed
 	);
-
+	
+    m_Font.openFromFile("../Resources/ObliviousFont.ttf");
+	m_ScoreText = new sf::Text(m_Font, "Player 1: 0 | Player 2: 0", 30);
+    m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
+	m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.05f * m_Window->getSize().y});
+	m_ScoreText->setFillColor(sf::Color::White);
 }
 
 PongGame::~PongGame()
@@ -78,18 +83,18 @@ void PongGame::UpdateGame()
 void PongGame::AddScore(Player& player)
 {
     player.m_CurrentScore++;
-#ifdef DEBUG
-	std::cout << "Player1 score: " << m_Player1->m_CurrentScore << " | Player2 score: " << m_Player2->m_CurrentScore << std::endl;
-#endif
+    
+	m_ScoreText->setString("Player 1: " + std::to_string(m_Player1->m_CurrentScore) + " | Player 2: " + std::to_string(m_Player2->m_CurrentScore));
+
 	//Check if game should end
     if (player.m_CurrentScore >= 11)
     {
 	    Player& opponent = (&player == m_Player1) ? *m_Player2 : *m_Player1;
         if (player.m_CurrentScore - opponent.m_CurrentScore >= 2)
         {
-#ifdef DEBUG
-			std::cout << "Game Over!" << std::endl;
-#endif
+            m_ScoreText->setString("Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "         GAME OVER!         Player 2: " + std::to_string(m_Player2->m_CurrentScore));
+            m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
+			m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.5f * m_Window->getSize().y });
             m_GameState = GameState::GameOver;
         }
     }
@@ -143,6 +148,13 @@ void PongGame::ProcessEvents()
                     continue;
 				m_GameState = (m_GameState == GameState::Running) ? GameState::Paused : GameState::Running;
             }
+#ifdef DEBUG
+            if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::A)
+            {
+				m_Player1->m_CurrentScore++;
+                    continue;
+            }
+#endif
 			continue;
         }
     }
@@ -154,6 +166,7 @@ void PongGame::Draw()
     switch (m_GameState)
     {
     case GameState::Running:
+		m_Window->draw(*m_ScoreText);
 		m_Player1->Draw(*m_Window);
 		m_Player2->Draw(*m_Window);
 		m_Ball->Draw(*m_Window);
@@ -161,6 +174,7 @@ void PongGame::Draw()
     case GameState::Paused:
         break;
     case GameState::GameOver:
+		m_Window->draw(*m_ScoreText);
         break;
     default:
         break;
