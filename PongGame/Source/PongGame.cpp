@@ -3,6 +3,10 @@
 PongGame::PongGame()
 {
     m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
+    m_View.setSize(sf::Vector2f(m_Settings.width, m_Settings.height));
+	m_View.setCenter(sf::Vector2f(m_Settings.width/2, m_Settings.height/2));
+	m_View = ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
+
 	m_Player1 = new Player
     (
         0.1,
@@ -126,6 +130,15 @@ void PongGame::ProcessEvents()
             continue;
         }
 
+		//Resize event
+        if(event->is<sf::Event::Resized>())
+        {
+            sf::Vector2u newSize = event->getIf<sf::Event::Resized>()->size;
+            m_View = ResizeView(m_View, newSize);
+            continue;
+		}
+
+
 		//Key pressed event
         if (event->is<sf::Event::KeyPressed>())
         {
@@ -163,6 +176,7 @@ void PongGame::ProcessEvents()
 void PongGame::Draw()
 {
     m_Window->clear();
+	m_Window->setView(m_View);
     switch (m_GameState)
     {
     case GameState::Running:
@@ -180,4 +194,33 @@ void PongGame::Draw()
         break;
     }
     m_Window->display();
+}
+
+sf::View PongGame::ResizeView(sf::View view, const sf::Vector2u& windowSize)
+{
+    float windowRatio = (float)windowSize.x / (float)windowSize.y;
+    float viewRatio = view.getSize().x / (float)view.getSize().y;
+    float sizeX = 1;
+    float sizeY = 1;
+    float posX = 0;
+    float posY = 0;
+
+    bool horizontalSpacing = true;
+    if (windowRatio < viewRatio)
+        horizontalSpacing = false;
+
+    if (horizontalSpacing) 
+    {
+        sizeX = viewRatio / windowRatio;
+        posX = (1 - sizeX) / 2.f;
+    }
+    else
+    {
+        sizeY = windowRatio / viewRatio;
+        posY = (1 - sizeY) / 2.f;
+    }
+
+    view.setViewport(sf::FloatRect(sf::Vector2f(posX, posY), sf::Vector2f(sizeX, sizeY)));
+
+    return view;
 }

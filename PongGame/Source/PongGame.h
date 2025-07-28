@@ -24,6 +24,7 @@ private:
 	void CheckBallEscape();
 	void AddScore(Player& player);
 	void UpdateGame();
+	sf::View ResizeView(sf::View view, const sf::Vector2u& windowSize);
 private:
 	sf::RenderWindow* m_Window;
 	sf::View m_View;

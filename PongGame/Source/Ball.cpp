@@ -32,8 +32,8 @@ void Ball::Reset()
 
 void Ball::Draw(sf::RenderWindow& window)
 {
-	int windowHeight = window.getSize().y;
-	int windowWidth = window.getSize().x;
+	int windowHeight = window.getView().getSize().y;
+	int windowWidth = window.getView().getSize().x;
 
 	m_Shape.setPosition({ m_Position.x * windowWidth, m_Position.y * windowHeight });
 	window.draw(m_Shape);
@@ -46,8 +46,8 @@ void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& p
 	m_Position.x += m_Speed * m_Direction.x * deltaTime;
 
 	// Clamp position to stay within the window bounds
-	int windowHeight = window.getSize().y;
-	int windowWidth = window.getSize().x;
+	int windowHeight = window.getView().getSize().y;
+	int windowWidth = window.getView().getSize().x;
 	if (m_Position.y < 0 + m_Radius / windowHeight || m_Position.y > 1 - m_Radius / windowHeight)
 		m_Direction.y *= -1;
 

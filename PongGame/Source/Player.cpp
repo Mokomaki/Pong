@@ -15,8 +15,8 @@ Player::Player(float x, float y, float width, float height, sf::Color color, flo
 
 void Player::Draw(sf::RenderWindow& window)
 {
-	int windowHeight = window.getSize().y;
-	int windowWidth = window.getSize().x;
+	int windowHeight = window.getView().getSize().y;
+	int windowWidth = window.getView().getSize().x;
 
 	m_Shape.setPosition({m_Position.x * windowWidth, m_Position.y * windowHeight});
 	window.draw(m_Shape);
@@ -34,7 +34,7 @@ void Player::Update(float deltaTime, sf::RenderWindow& window)
 	}
 	
 	// Clamp position to stay within the window bounds
-	int windowHeight = window.getSize().y;
+	int windowHeight = window.getView().getSize().y;
 	if (m_Position.y < 0 + m_HalfHeight / windowHeight) m_Position.y = 0 + m_HalfHeight / windowHeight;
 	if (m_Position.y > 1 - m_HalfHeight / windowHeight) m_Position.y = 1 - m_HalfHeight / windowHeight;
 }
