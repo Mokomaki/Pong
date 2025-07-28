@@ -25,16 +25,15 @@ void Player::Draw(sf::RenderWindow& window)
 void Player::Update(float deltaTime, sf::RenderWindow& window)
 {
 	if (sf::Keyboard::isKeyPressed(m_UpKey))
-	{
 		m_Position.y -= m_Speed * deltaTime;
-	}
 	if (sf::Keyboard::isKeyPressed(m_DownKey))
-	{
 		m_Position.y += m_Speed * deltaTime;
-	}
 	
 	// Clamp position to stay within the window bounds
 	int windowHeight = window.getView().getSize().y;
-	if (m_Position.y < 0 + m_HalfHeight / windowHeight) m_Position.y = 0 + m_HalfHeight / windowHeight;
-	if (m_Position.y > 1 - m_HalfHeight / windowHeight) m_Position.y = 1 - m_HalfHeight / windowHeight;
+	if (m_Position.y < 0 + m_HalfHeight / windowHeight)
+		m_Position.y = 0 + m_HalfHeight / windowHeight;
+
+	if (m_Position.y > 1 - m_HalfHeight / windowHeight)
+		m_Position.y = 1 - m_HalfHeight / windowHeight;
 }

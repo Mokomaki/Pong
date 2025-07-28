@@ -2,7 +2,7 @@
 #include "Utilities.h"
 
 Ball::Ball(float x, float y, float radius, sf::Color color, float speed)
-	: m_Position(x, y), m_Speed(speed), m_Radius(radius)
+	: m_Position(x, y), m_Speed(speed), m_Radius(radius), m_CurrentSpeed(speed)
 {
 
 	m_Shape.setRadius(radius);
@@ -28,6 +28,7 @@ void Ball::Reset()
 {
 	m_Position = { 0.5f, 0.5f };
 	m_Direction = GetRandomDirection();
+	m_CurrentSpeed = m_Speed;
 }
 
 void Ball::Draw(sf::RenderWindow& window)
@@ -41,9 +42,10 @@ void Ball::Draw(sf::RenderWindow& window)
 
 void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2)
 {
+	m_CurrentSpeed += m_Acceleration * deltaTime;
 
-	m_Position.y += m_Speed * m_Direction.y * deltaTime;
-	m_Position.x += m_Speed * m_Direction.x * deltaTime;
+	m_Position.y += m_CurrentSpeed * m_Direction.y * deltaTime;
+	m_Position.x += m_CurrentSpeed * m_Direction.x * deltaTime;
 
 	// Clamp position to stay within the window bounds
 	int windowHeight = window.getView().getSize().y;

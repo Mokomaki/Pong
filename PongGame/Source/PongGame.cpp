@@ -41,7 +41,7 @@ PongGame::PongGame()
 	);
 	
     m_Font.openFromFile("../Resources/ObliviousFont.ttf");
-	m_ScoreText = new sf::Text(m_Font, "Player 1: 0 | Player 2: 0", 30);
+	m_ScoreText = new sf::Text(m_Font, "Player 1: 0      |      Player 2: 0", 30);
     m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
 	m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.05f * m_Window->getSize().y});
 	m_ScoreText->setFillColor(sf::Color::White);
@@ -88,7 +88,9 @@ void PongGame::AddScore(Player& player)
 {
     player.m_CurrentScore++;
     
-	m_ScoreText->setString("Player 1: " + std::to_string(m_Player1->m_CurrentScore) + " | Player 2: " + std::to_string(m_Player2->m_CurrentScore));
+	m_ScoreText->setString("Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      Player 2: " + std::to_string(m_Player2->m_CurrentScore));
+    m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
+    m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.05f * m_Window->getSize().y });
 
 	//Check if game should end
     if (player.m_CurrentScore >= 11)

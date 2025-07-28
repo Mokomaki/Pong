@@ -18,5 +18,7 @@ private:
 	sf::Vector2f m_Direction;
 	float m_Radius;
 	float m_Speed;
+	float m_CurrentSpeed;
+	float m_Acceleration = 0.05f;
 	bool m_CanTurn = true;
 };
