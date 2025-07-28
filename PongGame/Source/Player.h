@@ -9,6 +9,9 @@ public:
 	sf::Vector2f GetPosition() const { return m_Position; }
 	float GetHalfHeight() const { return m_HalfHeight; }
 	float GetHalfWidth() const { return m_HalfWidth; }
+	sf::FloatRect GetBoundingBox() const {
+		return sf::FloatRect({ m_Position.x, m_Position.y}, { m_HalfWidth * 2, m_HalfHeight * 2 });
+	}
 private:
 	sf::Vector2f m_Position;
 	sf::RectangleShape m_Shape;

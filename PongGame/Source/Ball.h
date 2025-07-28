@@ -5,7 +5,7 @@
 class Ball {
 public:
 	Ball(float x, float y, float radius, sf::Color color, float speed);
-	void Update(float deltaTime, sf::RenderWindow& window, Player& player1, Player& player2);
+	void Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2);
 	void Draw(sf::RenderWindow& window);
 	void Reset();
 private:

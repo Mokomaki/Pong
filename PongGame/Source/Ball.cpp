@@ -1,5 +1,5 @@
 #include "Ball.h"
-
+#include "Utilities.h"
 
 Ball::Ball(float x, float y, float radius, sf::Color color, float speed)
 	: m_Position(x, y), m_Speed(speed), m_Radius(radius)
@@ -39,7 +39,7 @@ void Ball::Draw(sf::RenderWindow& window)
 	window.draw(m_Shape);
 }
 
-void Ball::Update(float deltaTime, sf::RenderWindow& window,Player& player1, Player& player2)
+void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2)
 {
 
 	m_Position.y += m_Speed * m_Direction.y * deltaTime;
@@ -51,27 +51,34 @@ void Ball::Update(float deltaTime, sf::RenderWindow& window,Player& player1, Pla
 	if (m_Position.y < 0 + m_Radius / windowHeight || m_Position.y > 1 - m_Radius / windowHeight)
 		m_Direction.y *= -1;
 
+	// Reset the can turn flag if the ball is in the middle of the screen
 	if(m_Position.x < 0.6f && m_Position.x > 0.4f)
 		m_CanTurn = true;
 
 	//Check for collision with players
 	if (m_CanTurn)
 	{
-		if ((m_Position.y * windowHeight) < (player1.GetPosition().y * windowHeight) + m_Radius + player1.GetHalfHeight() &&
-			(m_Position.y * windowHeight) > (player1.GetPosition().y * windowHeight) - m_Radius - player1.GetHalfHeight() &&
-			(m_Position.x * windowWidth) < (player1.GetPosition().x * windowWidth) + m_Radius + player1.GetHalfWidth() &&
-			(m_Position.x * windowWidth) > (player1.GetPosition().x * windowWidth) - m_Radius - player1.GetHalfWidth())
+		sf::FloatRect player1BoundingBox = player1.GetBoundingBox();
+		player1BoundingBox.position = { player1.GetPosition().x * windowWidth, player1.GetPosition().y * windowHeight};
+
+		sf::Vector2f p1Collision = Utilities::CircleAABBCollision({ m_Position.x * windowWidth, m_Position.y * windowHeight}, m_Radius, player1BoundingBox);
+
+		sf::FloatRect player2BoundingBox = player2.GetBoundingBox();
+		player2BoundingBox.position = { player2.GetPosition().x * windowWidth, player2.GetPosition().y * windowHeight };
+
+		sf::Vector2f p2Collision = Utilities::CircleAABBCollision({ m_Position.x * windowWidth, m_Position.y * windowHeight }, m_Radius, player2BoundingBox);
+		
+		//Turn if ball collides with either player
+		if (p1Collision.length() > 0.0f || p2Collision.length() > 0.0f)
 		{
 			m_Direction.x *= -1;
 			m_CanTurn = false;
-		}
-		else if ((m_Position.y * windowHeight) < (player2.GetPosition().y * windowHeight) + m_Radius + player2.GetHalfHeight() &&
-			(m_Position.y * windowHeight) > (player2.GetPosition().y * windowHeight) - m_Radius - player2.GetHalfHeight() &&
-			(m_Position.x * windowWidth) < (player2.GetPosition().x * windowWidth) + m_Radius + player2.GetHalfWidth() &&
-			(m_Position.x * windowWidth) > (player2.GetPosition().x * windowWidth) - m_Radius - player2.GetHalfWidth())
-		{
-			m_Direction.x *= -1;
-			m_CanTurn = false;
+
+			// If the collision is mostly vertical, invert the y direction
+			if( p1Collision.y > 0.8f || p1Collision.y < -0.8f || p2Collision.y > 0.8f || p2Collision.y < -0.8f)
+			{
+				m_Direction.y *= -1;
+			}
 		}
 	}
 
