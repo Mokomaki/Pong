@@ -81,8 +81,4 @@ void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& p
 			}
 		}
 	}
-
-
-	if (m_Position.x < 0 + m_Radius / windowWidth || m_Position.x > 1 - m_Radius / windowWidth)
-		Reset();
 }

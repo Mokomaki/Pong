@@ -12,6 +12,8 @@ public:
 	sf::FloatRect GetBoundingBox() const {
 		return sf::FloatRect({ m_Position.x, m_Position.y}, { m_HalfWidth * 2, m_HalfHeight * 2 });
 	}
+public:
+	short m_CurrentScore = 0;
 private:
 	sf::Vector2f m_Position;
 	sf::RectangleShape m_Shape;

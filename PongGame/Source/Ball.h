@@ -8,6 +8,8 @@ public:
 	void Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2);
 	void Draw(sf::RenderWindow& window);
 	void Reset();
+	sf::Vector2f GetPosition() const { return m_Position; }
+	float GetRadius() const { return m_Radius; }
 private:
 	sf::Vector2f GetRandomDirection();
 private:

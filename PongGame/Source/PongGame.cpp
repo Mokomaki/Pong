@@ -51,10 +51,62 @@ void PongGame::Run()
 	{
 		m_deltaTime = deltaClock.restart().asSeconds();
         ProcessEvents();
-		m_Player1->Update(m_deltaTime, *m_Window);
-		m_Player2->Update(m_deltaTime, *m_Window);
-		m_Ball->Update(m_deltaTime, *m_Window, *m_Player1, *m_Player2);
+        switch (m_GameState)
+        {
+        case GameState::Running:
+            UpdateGame();
+            break;
+        case GameState::Paused:
+            break;
+        case GameState::GameOver:
+            break;
+        default:
+            break;
+        }
 		Draw();
+    }
+}
+
+void PongGame::UpdateGame()
+{
+    m_Player1->Update(m_deltaTime, *m_Window);
+    m_Player2->Update(m_deltaTime, *m_Window);
+    m_Ball->Update(m_deltaTime, *m_Window, *m_Player1, *m_Player2);
+    CheckBallEscape();
+}
+
+void PongGame::AddScore(Player& player)
+{
+    player.m_CurrentScore++;
+#ifdef DEBUG
+	std::cout << "Player1 score: " << m_Player1->m_CurrentScore << " | Player2 score: " << m_Player2->m_CurrentScore << std::endl;
+#endif
+	//Check if game should end
+    if (player.m_CurrentScore >= 11)
+    {
+	    Player& opponent = (&player == m_Player1) ? *m_Player2 : *m_Player1;
+        if (player.m_CurrentScore - opponent.m_CurrentScore >= 2)
+        {
+#ifdef DEBUG
+			std::cout << "Game Over!" << std::endl;
+#endif
+            m_GameState = GameState::GameOver;
+        }
+    }
+}
+
+void PongGame::CheckBallEscape()
+{
+    //Check if the ball has escaped the left or right side of the screen
+    if (m_Ball->GetPosition().x < -0.1f)
+    {
+		AddScore(*m_Player2);
+        m_Ball->Reset();
+    }
+    else if (m_Ball->GetPosition().x > 1.1f)
+    {
+		AddScore(*m_Player1);
+        m_Ball->Reset();
     }
 }
 

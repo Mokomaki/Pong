@@ -3,6 +3,7 @@
 #include "PongSettings.h"
 #include "Player.h"
 #include "Ball.h"
+#include <iostream>
 
 enum class GameState
 {
@@ -20,6 +21,9 @@ public:
 private:
 	void Draw();
 	void ProcessEvents();
+	void CheckBallEscape();
+	void AddScore(Player& player);
+	void UpdateGame();
 private:
 	sf::RenderWindow* m_Window;
 	sf::View m_View;
