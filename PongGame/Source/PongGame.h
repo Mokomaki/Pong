@@ -5,6 +5,7 @@
 #include "Ball.h"
 #include "Utilities.h"
 #include <iostream>
+#include <math.h>
 
 enum class GameState
 {
@@ -30,6 +31,7 @@ private:
 	void ChangeGameState(GameState newState);
 private:
 	sf::RenderWindow* m_Window;
+	sf::RenderTexture* m_RenderTexture;
 	sf::View m_View;
 	sf::Font m_Font;
 	PongSettings m_Settings;

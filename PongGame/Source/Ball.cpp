@@ -31,13 +31,13 @@ void Ball::Reset()
 	m_CurrentSpeed = m_Speed;
 }
 
-void Ball::Draw(sf::RenderWindow& window)
+void Ball::Draw(sf::RenderTarget& target)
 {
-	int windowHeight = window.getView().getSize().y;
-	int windowWidth = window.getView().getSize().x;
+	int windowHeight = target.getView().getSize().y;
+	int windowWidth = target.getView().getSize().x;
 
 	m_Shape.setPosition({ m_Position.x * windowWidth, m_Position.y * windowHeight });
-	window.draw(m_Shape);
+	target.draw(m_Shape);
 }
 
 void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2)

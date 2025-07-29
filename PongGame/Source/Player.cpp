@@ -13,13 +13,13 @@ Player::Player(float x, float y, float width, float height, sf::Color color, flo
 	m_Shape.setOrigin({ width / 2, height / 2 });
 }
 
-void Player::Draw(sf::RenderWindow& window)
+void Player::Draw(sf::RenderTarget& target)
 {
-	int windowHeight = window.getView().getSize().y;
-	int windowWidth = window.getView().getSize().x;
+	int windowHeight = target.getView().getSize().y;
+	int windowWidth = target.getView().getSize().x;
 
 	m_Shape.setPosition({m_Position.x * windowWidth, m_Position.y * windowHeight});
-	window.draw(m_Shape);
+	target.draw(m_Shape);
 }
 
 void Player::Update(float deltaTime, sf::RenderWindow& window)

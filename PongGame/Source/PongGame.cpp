@@ -3,6 +3,9 @@
 PongGame::PongGame()
 {
     m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
+	m_RenderTexture = new sf::RenderTexture();
+    m_RenderTexture->setSmooth(true);
+	m_RenderTexture->resize(sf::Vector2u(m_Settings.width, m_Settings.height));
     m_View.setSize(sf::Vector2f(m_Settings.width, m_Settings.height));
 	m_View.setCenter(sf::Vector2f(m_Settings.width/2, m_Settings.height/2));
 	m_View = Utilities::ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
@@ -199,32 +202,39 @@ void PongGame::ProcessEvents()
 
 void PongGame::Draw()
 {
-    m_Window->clear();
-	m_Window->setView(m_View);
+	m_RenderTexture->clear();
+	//m_RenderTexture->setView(m_View);
     switch (m_GameState)
     {
         case GameState::Menu:
-            m_Window->draw(*m_PromptText);
-			m_Window->draw(*m_TitleText);
+			m_RenderTexture->draw(*m_TitleText);
+			m_RenderTexture->draw(*m_PromptText);
+            //m_Window->draw(*m_PromptText);
+			//m_Window->draw(*m_TitleText);
             break;
         case GameState::Running:
-	    	m_Window->draw(*m_ScoreText);
-	    	m_Player1->Draw(*m_Window);
-	    	m_Player2->Draw(*m_Window);
-	    	m_Ball->Draw(*m_Window);
+            m_RenderTexture->draw(*m_ScoreText);
+	    	m_Player1->Draw(*m_RenderTexture);
+	    	m_Player2->Draw(*m_RenderTexture);
+	    	m_Ball->Draw(*m_RenderTexture);
             break;
         case GameState::Paused:
-			m_Window->draw(*m_TitleText);
-			m_Window->draw(*m_PromptText);
+            m_RenderTexture->draw(*m_TitleText);
+            m_RenderTexture->draw(*m_PromptText);
             break;
         case GameState::GameOver:
-			m_Window->draw(*m_TitleText);
-	    	m_Window->draw(*m_ScoreText);
-			m_Window->draw(*m_PromptText);
+            m_RenderTexture->draw(*m_TitleText);
+            m_RenderTexture->draw(*m_ScoreText);
+            m_RenderTexture->draw(*m_PromptText);
             break;
         default:
             break;
     }
+	m_RenderTexture->display();
+    m_Window->clear();
+	
+    m_Window->setView(m_View);
+	m_Window->draw(sf::Sprite(m_RenderTexture->getTexture()));
     m_Window->display();
 }
 
