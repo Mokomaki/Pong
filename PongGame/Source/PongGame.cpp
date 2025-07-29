@@ -5,9 +5,14 @@ PongGame::PongGame()
     m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
     m_View.setSize(sf::Vector2f(m_Settings.width, m_Settings.height));
 	m_View.setCenter(sf::Vector2f(m_Settings.width/2, m_Settings.height/2));
-	m_View = ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
+	m_View = Utilities::ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
 
-	m_Player1 = new Player
+    InitGameEntities();
+}
+
+void PongGame::InitGameEntities()
+{
+    m_Player1 = new Player
     (
         0.1,
         0.5,
@@ -37,14 +42,26 @@ PongGame::PongGame()
         0.5f,
         m_Settings.ballRadius,
         sf::Color::White,
-		m_Settings.ballSpeed
-	);
-	
+        m_Settings.ballSpeed
+    );
+
     m_Font.openFromFile("../Resources/ObliviousFont.ttf");
-	m_ScoreText = new sf::Text(m_Font, "Player 1: 0      |      Player 2: 0", 30);
-    m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
-	m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.05f * m_Window->getSize().y});
-	m_ScoreText->setFillColor(sf::Color::White);
+    m_ScoreText = new sf::Text(m_Font, "", 30);
+    m_ScoreText->setFillColor(sf::Color::White);
+	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: 0      |      Player 2: 0", { 0.5f, 0.05f }, *m_Window);
+
+    m_TitleText = new sf::Text(m_Font, "", 100);
+	m_TitleText->setStyle(sf::Text::Bold);
+	m_TitleText->setLetterSpacing(4.5f);
+	m_TitleText->setFillColor(sf::Color::White);
+	Utilities::SetTextAndPosition(*m_TitleText, m_Settings.title, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
+
+    m_PromptText = new sf::Text(m_Font, "", 20);
+    m_PromptText->setFillColor(sf::Color::White);
+	m_PromptText->setLineSpacing(1.5f);
+    m_PromptText->setOrigin({ 0.5f * m_TitleText->getLocalBounds().size.x, 0.5f * m_TitleText->getLocalBounds().size.y });
+    m_PromptText->setPosition({ 0.5f * m_Window->getView().getSize().x, 0.7f * m_Window->getView().getSize().y });
+	Utilities::SetTextAndPosition(*m_PromptText, m_Settings.menuPromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
 }
 
 PongGame::~PongGame()
@@ -88,9 +105,7 @@ void PongGame::AddScore(Player& player)
 {
     player.m_CurrentScore++;
     
-	m_ScoreText->setString("Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      Player 2: " + std::to_string(m_Player2->m_CurrentScore));
-    m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
-    m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.05f * m_Window->getSize().y });
+	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      " + "Player 2: " + std::to_string(m_Player2->m_CurrentScore), { 0.5f, 0.05f }, *m_Window);
 
 	//Check if game should end
     if (player.m_CurrentScore >= 11)
@@ -98,10 +113,7 @@ void PongGame::AddScore(Player& player)
 	    Player& opponent = (&player == m_Player1) ? *m_Player2 : *m_Player1;
         if (player.m_CurrentScore - opponent.m_CurrentScore >= 2)
         {
-            m_ScoreText->setString("Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "         GAME OVER!         Player 2: " + std::to_string(m_Player2->m_CurrentScore));
-            m_ScoreText->setOrigin({ 0.5f * m_ScoreText->getLocalBounds().size.x, 0.5f * m_ScoreText->getLocalBounds().size.y });
-			m_ScoreText->setPosition({ 0.5f * m_Window->getSize().x, 0.5f * m_Window->getSize().y });
-            m_GameState = GameState::GameOver;
+			ChangeGameState(GameState::GameOver);
         }
     }
 }
@@ -136,7 +148,7 @@ void PongGame::ProcessEvents()
         if(event->is<sf::Event::Resized>())
         {
             sf::Vector2u newSize = event->getIf<sf::Event::Resized>()->size;
-            m_View = ResizeView(m_View, newSize);
+            m_View = Utilities::ResizeView(m_View, newSize);
             continue;
 		}
 
@@ -144,7 +156,7 @@ void PongGame::ProcessEvents()
 		//Key pressed event
         if (event->is<sf::Event::KeyPressed>())
         {
-#if DEBUG
+#ifdef DEBUG
             if (event->getIf<sf::Event::KeyPressed>()->code == sf::Keyboard::Key::R)
             {
 				m_Ball->Reset();
@@ -159,9 +171,19 @@ void PongGame::ProcessEvents()
 			//Pause when escape is pressed
             if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::Escape)
             {
-                if (m_GameState == GameState::GameOver)
+                if(m_GameState == GameState::Paused || m_GameState == GameState::GameOver)
+				    ChangeGameState(GameState::Menu);
+                else if (m_GameState == GameState::Running)
+				    ChangeGameState(GameState::Paused);
+				continue;
+            }
+
+			//Start the game when enter is pressed
+            if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::Enter)
+            {
+                if (m_GameState == GameState::Running)
                     continue;
-				m_GameState = (m_GameState == GameState::Running) ? GameState::Paused : GameState::Running;
+                ChangeGameState(GameState::Running);
             }
 #ifdef DEBUG
             if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::A)
@@ -181,48 +203,70 @@ void PongGame::Draw()
 	m_Window->setView(m_View);
     switch (m_GameState)
     {
-    case GameState::Running:
-		m_Window->draw(*m_ScoreText);
-		m_Player1->Draw(*m_Window);
-		m_Player2->Draw(*m_Window);
-		m_Ball->Draw(*m_Window);
-        break;
-    case GameState::Paused:
-        break;
-    case GameState::GameOver:
-		m_Window->draw(*m_ScoreText);
-        break;
-    default:
-        break;
+        case GameState::Menu:
+            m_Window->draw(*m_PromptText);
+			m_Window->draw(*m_TitleText);
+            break;
+        case GameState::Running:
+	    	m_Window->draw(*m_ScoreText);
+	    	m_Player1->Draw(*m_Window);
+	    	m_Player2->Draw(*m_Window);
+	    	m_Ball->Draw(*m_Window);
+            break;
+        case GameState::Paused:
+			m_Window->draw(*m_TitleText);
+			m_Window->draw(*m_PromptText);
+            break;
+        case GameState::GameOver:
+			m_Window->draw(*m_TitleText);
+	    	m_Window->draw(*m_ScoreText);
+			m_Window->draw(*m_PromptText);
+            break;
+        default:
+            break;
     }
     m_Window->display();
 }
 
-sf::View PongGame::ResizeView(sf::View view, const sf::Vector2u& windowSize)
+void PongGame::ChangeGameState(GameState newState)
 {
-    float windowRatio = (float)windowSize.x / (float)windowSize.y;
-    float viewRatio = view.getSize().x / (float)view.getSize().y;
-    float sizeX = 1;
-    float sizeY = 1;
-    float posX = 0;
-    float posY = 0;
-
-    bool horizontalSpacing = true;
-    if (windowRatio < viewRatio)
-        horizontalSpacing = false;
-
-    if (horizontalSpacing) 
+    switch (newState)
     {
-        sizeX = viewRatio / windowRatio;
-        posX = (1 - sizeX) / 2.f;
-    }
-    else
-    {
-        sizeY = windowRatio / viewRatio;
-        posY = (1 - sizeY) / 2.f;
-    }
+        case GameState::Menu:
+            m_TitleText->setLetterSpacing(m_Settings.wideTitleLetterSpacing);
+			Utilities::SetTextAndPosition(*m_TitleText, m_Settings.title, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
+			Utilities::SetTextAndPosition(*m_PromptText, m_Settings.menuPromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
+            m_GameState = GameState::Menu;
+			break;
+        case GameState::Running:
+            if (m_GameState == GameState::Paused)
+            {
+				m_GameState = GameState::Running;
+                return;
+            }
+			m_Player1->Reset();
+            m_Player2->Reset();
+			m_Ball->Reset();
 
-    view.setViewport(sf::FloatRect(sf::Vector2f(posX, posY), sf::Vector2f(sizeX, sizeY)));
+			Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      " + "Player 2: " + std::to_string(m_Player2->m_CurrentScore), { 0.5f, 0.05f }, *m_Window);
 
-    return view;
+            m_GameState = GameState::Running;
+            break;
+        case GameState::Paused:
+            m_TitleText->setLetterSpacing(m_Settings.normalTitleLetterSpacing);
+			Utilities::SetTextAndPosition(*m_TitleText, m_Settings.pauseTitleText, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
+            Utilities::SetTextAndPosition(*m_PromptText, m_Settings.pausePromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
+            m_GameState = GameState::Paused;
+            break;
+        case GameState::GameOver:
+			m_TitleText->setLetterSpacing(m_Settings.normalTitleLetterSpacing);
+			Utilities::SetTextAndPosition(*m_TitleText, m_Settings.gameoverTitleText, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
+			Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      " + "Player 2: " + std::to_string(m_Player2->m_CurrentScore), { 0.5f, 0.5f }, *m_Window);
+            Utilities::SetTextAndPosition(*m_PromptText, m_Settings.gameOverPromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
+            m_GameState = GameState::GameOver;
+            break;
+        default:
+			break;
+
+    }
 }

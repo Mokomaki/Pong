@@ -3,30 +3,11 @@
 
 namespace Utilities
 {
-	float Clamp(float value, float min, float max)
-	{
-		if (value < min) return min;
-		if (value > max) return max;
-		return value;
-	}
+	float Clamp(float value, float min, float max);
 
-	sf::Vector2f CircleAABBCollision(const sf::Vector2f& circleCenter, float radius, const sf::FloatRect& aabb)
-	{
-		sf::Vector2f direction = circleCenter - aabb.position;
-		sf::Vector2f aabbHalfSize = { aabb.size.x / 2.0f, aabb.size.y / 2.0f };
-		float x = Utilities::Clamp(direction.x, -aabbHalfSize.x, aabbHalfSize.x);
-		float y = Utilities::Clamp(direction.y, -aabbHalfSize.y, aabbHalfSize.y);
-		sf::Vector2f closestPoint = aabb.position + sf::Vector2f(x, y);
-		direction = closestPoint - circleCenter;
+	sf::Vector2f CircleAABBCollision(const sf::Vector2f& circleCenter, float radius, const sf::FloatRect& aabb);
 
-		float diff = sqrt((direction.x * direction.x) + (direction.y * direction.y));
+	void SetTextAndPosition(sf::Text& text, const std::string& str, const sf::Vector2f& position, const sf::RenderWindow& window);
 
-		if (diff <= radius)
-		{
-			// Collision detected
-			return direction.normalized();
-		}
-		// No collision
-		return { 0.0f, 0.0f };
-	}
+	sf::View ResizeView(sf::View& view, const sf::Vector2u& windowSize);
 }

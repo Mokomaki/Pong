@@ -3,10 +3,12 @@
 #include "PongSettings.h"
 #include "Player.h"
 #include "Ball.h"
+#include "Utilities.h"
 #include <iostream>
 
 enum class GameState
 {
+	Menu,
 	Running,
 	Paused,
 	GameOver
@@ -24,15 +26,18 @@ private:
 	void CheckBallEscape();
 	void AddScore(Player& player);
 	void UpdateGame();
-	sf::View ResizeView(sf::View view, const sf::Vector2u& windowSize);
+	void InitGameEntities();
+	void ChangeGameState(GameState newState);
 private:
 	sf::RenderWindow* m_Window;
 	sf::View m_View;
 	sf::Font m_Font;
-	sf::Text* m_ScoreText;
 	PongSettings m_Settings;
+	GameState m_GameState = GameState::Menu;
 	float m_deltaTime = 0.0f;
-	GameState m_GameState = GameState::Running;
+	sf::Text* m_ScoreText;
+	sf::Text* m_TitleText;
+	sf::Text* m_PromptText;
 	Player* m_Player1;
 	Player* m_Player2;
 	Ball* m_Ball;

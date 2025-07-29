@@ -3,7 +3,7 @@
 Player::Player(float x, float y, float width, float height, sf::Color color, float outlineThickness, float speed, sf::Keyboard::Key upKey, sf::Keyboard::Key downKey)
 	: m_Position(x, y), m_Speed(speed), m_UpKey(upKey), m_DownKey(downKey)
 {
-	m_HalfHeight = (height + (outlineThickness*2)) / 2;
+	m_HalfHeight = (height + (outlineThickness * 2)) / 2;
 	m_HalfWidth = (width + (outlineThickness * 2)) / 2;
 
 	m_Shape.setSize({width, height});
@@ -36,4 +36,10 @@ void Player::Update(float deltaTime, sf::RenderWindow& window)
 
 	if (m_Position.y > 1 - m_HalfHeight / windowHeight)
 		m_Position.y = 1 - m_HalfHeight / windowHeight;
+}
+
+void Player::Reset()
+{
+	m_CurrentScore = 0;
+	m_Position = sf::Vector2f(m_Position.x, 0.5f );
 }
