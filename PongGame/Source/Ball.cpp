@@ -6,7 +6,9 @@ Ball::Ball(float x, float y, float radius, sf::Color color, float speed)
 {
 
 	m_Shape.setRadius(radius);
-	m_Shape.setFillColor(color);
+	m_Shape.setFillColor(sf::Color::Black);
+	m_Shape.setOutlineColor(color);
+	m_Shape.setOutlineThickness(5.0f);
 	m_Shape.setOrigin({ radius, radius });
 
 	m_Direction = GetRandomDirection();

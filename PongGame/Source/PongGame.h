@@ -29,14 +29,19 @@ private:
 	void UpdateGame();
 	void InitGameEntities();
 	void ChangeGameState(GameState newState);
+	void CalculateTime();
 private:
 	sf::RenderWindow* m_Window;
 	sf::RenderTexture* m_RenderTexture;
 	sf::View m_View;
-	sf::Font m_Font;
+	sf::Shader* m_PostProcessShader;
 	PongSettings m_Settings;
 	GameState m_GameState = GameState::Menu;
-	float m_deltaTime = 0.0f;
+	sf::Clock m_Clock;
+	float m_DeltaTime = 0.0f;
+	float m_ScrollingTime = 0.0f;
+	sf::Music m_Music;
+	sf::Font m_Font;
 	sf::Text* m_ScoreText;
 	sf::Text* m_TitleText;
 	sf::Text* m_PromptText;
