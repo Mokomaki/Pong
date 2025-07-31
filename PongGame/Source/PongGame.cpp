@@ -53,6 +53,10 @@ void PongGame::InitGameEntities()
         m_Settings.ballSpeed
     );
 
+	m_Music.openFromFile("../Resources/pongmusic.wav");
+    m_Music.setLooping(true);
+    m_Music.play();
+
 
     m_Font.openFromFile("../Resources/ObliviousFont.ttf");
     m_ScoreText = new sf::Text(m_Font, "", 30);
