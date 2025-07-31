@@ -1,14 +1,18 @@
 # Pong
 
-My attempt at creating the pong game in C++.
+Retro style pong built with SMFL and C++. Whole application along with it's assets is statically linked to the executable so no need to keep dependencies around.
 Technologies:
--C++
--SFML
--Premake
--Git
--JIRA
 
-![pong titlescreen](ReadmeImages/pongtitle.png)
+- C++
+- SFML
+- Premake
+- Python
+- Git
+- JIRA
+- Audacity
+- BoscaCeoilBlue
+
+![pong titlescreen](ReadmeImages/pongstart.gif)
 
 ![pong gamplay](ReadmeImages/ponggame.png)
 
