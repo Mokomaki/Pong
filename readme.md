@@ -1,8 +1,9 @@
 # Pong
 
 Retro style pong built with SMFL and C++. Whole application along with it's assets is statically linked to the executable so no need to keep dependencies around.
-Technologies:
+Get the executable: [Latest release](https://github.com/Mokomaki/Pong/releases/tag/2.0)
 
+Technologies:
 - C++
 - SFML
 - Premake
