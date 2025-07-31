@@ -53,9 +53,13 @@ void PongGame::InitGameEntities()
         m_Settings.ballSpeed
     );
 
-	m_Music.openFromFile("../Resources/pongmusic.wav");
+	m_Music.openFromFile("../Resources/pongmusicLooping.wav");
     m_Music.setLooping(true);
     m_Music.play();
+    
+
+	m_ScoreSoundBuffer.loadFromFile("../Resources/ballescape.wav");
+	m_ScoreSound = new sf::Sound(m_ScoreSoundBuffer);
 
 
     m_Font.openFromFile("../Resources/ObliviousFont.ttf");
@@ -125,6 +129,7 @@ void PongGame::AddScore(Player& player)
         if (player.m_CurrentScore - opponent.m_CurrentScore >= 2)
 			ChangeGameState(GameState::GameOver);
     }
+	m_ScoreSound->play();
 }
 
 void PongGame::CheckBallEscape()
