@@ -1,12 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <iostream>
+#include <math.h>
+
 #include "PongSettings.h"
 #include "Player.h"
 #include "Ball.h"
 #include "Utilities.h"
-#include <iostream>
-#include <math.h>
+#include "PongAssets.h"
 
 enum class GameState
 {

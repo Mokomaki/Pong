@@ -3,6 +3,9 @@
 PongGame::PongGame()
 {
     m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
+    sf::Image icon;
+    icon.loadFromMemory(PongAssets::GetIconimageEmbedData(), PongAssets::GetIconimageEmbedSize());
+    m_Window->setIcon(icon);
 	m_RenderTexture = new sf::RenderTexture();
     m_RenderTexture->setSmooth(true);
 	m_RenderTexture->resize(sf::Vector2u(m_Settings.width, m_Settings.height));
@@ -53,16 +56,19 @@ void PongGame::InitGameEntities()
         m_Settings.ballSpeed
     );
 
-	m_Music.openFromFile("../Resources/pongmusicLooping.wav");
+
+
+	m_Music.openFromMemory(PongAssets::GetPongmusicEmbedData(), PongAssets::GetPongmusicEmbedSize());
     m_Music.setLooping(true);
     m_Music.play();
     
 
-	m_ScoreSoundBuffer.loadFromFile("../Resources/ballescape.wav");
+    m_ScoreSoundBuffer.loadFromMemory(PongAssets::GetBallescapesoundEmbedData(), PongAssets::GetBallescapesoundEmbedSize());
 	m_ScoreSound = new sf::Sound(m_ScoreSoundBuffer);
 
 
-    m_Font.openFromFile("../Resources/ObliviousFont.ttf");
+    //m_Font.openFromFile("../Resources/ObliviousFont.ttf");
+    m_Font.openFromMemory(PongAssets::GetObliviousfontEmbedData(), PongAssets::GetObliviousfontEmbedSize());
     m_ScoreText = new sf::Text(m_Font, "", 30);
     m_ScoreText->setFillColor(sf::Color::White);
 	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: 0      |      Player 2: 0", { 0.5f, 0.05f }, *m_Window);

@@ -1,17 +1,13 @@
 project "PongGame"
-   kind "ConsoleApp"
    language "C++"
    cppdialect "C++17"
    targetdir "Binaries/%{cfg.buildcfg}"
    staticruntime "off"
+   entrypoint "WinMainCRTStartup"
 
    files {
         "Source/**.h",
-        "Source/**.hpp",
-        "Source/**.cpp",
-        "Source/**.cxx",
-        "Source/**.cc",
-        "Source/**.c"
+        "Source/**.cpp"
     }
 
 
@@ -28,9 +24,9 @@ project "PongGame"
 
    links
    {
-        "winmm.lib",
-        "opengl32.lib",
-        "gdi32.lib"
+          "winmm.lib",
+          "opengl32.lib",
+          "gdi32.lib"
    }
 
 
@@ -42,11 +38,13 @@ project "PongGame"
        defines { "WINDOWS", "SFML_STATIC"}
 
    filter "configurations:Debug"
+       kind "ConsoleApp"
        defines { "DEBUG", "SFML_STATIC"}
        runtime "Debug"
        symbols "On"
        links
        {
+            "sfml-main-s-d.lib",
             "sfml-audio-s-d.lib",
             "sfml-graphics-s-d.lib",
             "sfml-system-s-d.lib",
@@ -60,12 +58,14 @@ project "PongGame"
        }
 
    filter "configurations:Release"
+       kind "WindowedApp"
        defines { "RELEASE", "SFML_STATIC"}
        runtime "Release"
        optimize "On"
        symbols "On"
         links
        {
+            "sfml-main-s.lib",
             "sfml-audio-s.lib",
             "sfml-graphics-s.lib",
             "sfml-system-s.lib",
@@ -73,7 +73,7 @@ project "PongGame"
             "freetype.lib",
             "FLAC.lib",
             "ogg.lib",
-            "vorblis.lib",
+            "vorbis.lib",
             "vorbisfile.lib",
             "vorbisenc.lib"
        }

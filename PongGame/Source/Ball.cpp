@@ -13,7 +13,8 @@ Ball::Ball(float x, float y, float radius, sf::Color color, float speed)
 
 	m_Direction = GetRandomDirection();
 
-	m_BallHitBuffer.loadFromFile("../Resources/ballhit.wav");
+	m_BallHitBuffer.loadFromMemory(PongAssets::GetBallhitsoundEmbedData(), PongAssets::GetBallhitsoundEmbedSize());
+	//m_BallHitBuffer.loadFromFile("../Resources/ballhit.ogg");
 	m_BallHitSound = new sf::Sound(m_BallHitBuffer);
 }
 
