@@ -42,6 +42,8 @@ private:
 	float m_DeltaTime = 0.0f;
 	float m_ScrollingTime = 0.0f;
 	sf::Music m_Music;
+	sf::SoundBuffer m_ScoreSoundBuffer;
+	sf::Sound* m_ScoreSound;
 	sf::Font m_Font;
 	sf::Text* m_ScoreText;
 	sf::Text* m_TitleText;

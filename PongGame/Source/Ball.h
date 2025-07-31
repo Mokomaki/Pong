@@ -1,5 +1,6 @@
 #pragma	once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Player.h"
 
 class Ball {
@@ -21,4 +22,6 @@ private:
 	float m_CurrentSpeed;
 	float m_Acceleration = 0.05f;
 	bool m_CanTurn = true;
+	sf::Sound* m_BallHitSound;
+	sf::SoundBuffer m_BallHitBuffer;
 };

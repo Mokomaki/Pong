@@ -12,6 +12,9 @@ Ball::Ball(float x, float y, float radius, sf::Color color, float speed)
 	m_Shape.setOrigin({ radius, radius });
 
 	m_Direction = GetRandomDirection();
+
+	m_BallHitBuffer.loadFromFile("../Resources/ballhit.wav");
+	m_BallHitSound = new sf::Sound(m_BallHitBuffer);
 }
 
 sf::Vector2f Ball::GetRandomDirection() 
@@ -53,7 +56,10 @@ void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& p
 	int windowHeight = window.getView().getSize().y;
 	int windowWidth = window.getView().getSize().x;
 	if (m_Position.y < 0 + m_Radius / windowHeight || m_Position.y > 1 - m_Radius / windowHeight)
+	{
+		m_BallHitSound->play();
 		m_Direction.y *= -1;
+	}
 
 	// Reset the can turn flag if the ball is in the middle of the screen
 	if(m_Position.x < 0.6f && m_Position.x > 0.4f)
@@ -83,6 +89,7 @@ void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& p
 			{
 				m_Direction.y *= -1;
 			}
+			m_BallHitSound->play();
 		}
 	}
 }
