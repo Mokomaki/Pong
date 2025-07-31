@@ -47,10 +47,16 @@ project "PongGame"
        symbols "On"
        links
        {
+            "sfml-audio-s-d.lib",
             "sfml-graphics-s-d.lib",
             "sfml-system-s-d.lib",
             "sfml-window-s-d.lib",
-            "freetyped.lib"
+            "freetyped.lib",
+            "FLACd.lib",
+            "oggd.lib",
+            "vorbisd.lib",
+            "vorbisfiled.lib",
+            "vorbisencd.lib"
        }
 
    filter "configurations:Release"
@@ -60,8 +66,14 @@ project "PongGame"
        symbols "On"
         links
        {
+            "sfml-audio-s.lib",
             "sfml-graphics-s.lib",
             "sfml-system-s.lib",
             "sfml-window-s.lib",
-            "freetype.lib"
+            "freetype.lib",
+            "FLAC.lib",
+            "ogg.lib",
+            "vorblis.lib",
+            "vorbisfile.lib",
+            "vorbisenc.lib"
        }

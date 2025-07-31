@@ -3,9 +3,17 @@
 PongGame::PongGame()
 {
     m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
-    m_View.setSize(sf::Vector2f(m_Settings.width, m_Settings.height));
+	m_RenderTexture = new sf::RenderTexture();
+    m_RenderTexture->setSmooth(true);
+	m_RenderTexture->resize(sf::Vector2u(m_Settings.width, m_Settings.height));
+    m_View.setSize(sf::Vector2f((float)m_Settings.width, (float)m_Settings.height));
 	m_View.setCenter(sf::Vector2f(m_Settings.width/2, m_Settings.height/2));
 	m_View = Utilities::ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
+
+    #include "postprocessingshader.glsl";
+
+    m_PostProcessShader = new sf::Shader();
+    m_PostProcessShader->loadFromMemory(fragmentShader, sf::Shader::Type::Fragment);
 
     InitGameEntities();
 }
@@ -45,6 +53,11 @@ void PongGame::InitGameEntities()
         m_Settings.ballSpeed
     );
 
+	m_Music.openFromFile("../Resources/pongmusic.wav");
+    m_Music.setLooping(true);
+    m_Music.play();
+
+
     m_Font.openFromFile("../Resources/ObliviousFont.ttf");
     m_ScoreText = new sf::Text(m_Font, "", 30);
     m_ScoreText->setFillColor(sf::Color::White);
@@ -71,33 +84,31 @@ PongGame::~PongGame()
 
 void PongGame::Run()
 {
-	sf::Clock deltaClock;
-
     while (m_Window->isOpen())
 	{
-		m_deltaTime = deltaClock.restart().asSeconds();
+		CalculateTime();
         ProcessEvents();
-        switch (m_GameState)
-        {
-        case GameState::Running:
+        if (m_GameState == GameState::Running)
             UpdateGame();
-            break;
-        case GameState::Paused:
-            break;
-        case GameState::GameOver:
-            break;
-        default:
-            break;
-        }
 		Draw();
     }
 }
 
+void PongGame::CalculateTime()
+{
+    m_DeltaTime = m_Clock.restart().asSeconds();
+
+	//Scrolling time is used for post-processing effects
+    m_ScrollingTime += m_DeltaTime;
+    if (m_ScrollingTime > 10.0f)
+        m_ScrollingTime = 0.0f;
+}
+
 void PongGame::UpdateGame()
 {
-    m_Player1->Update(m_deltaTime, *m_Window);
-    m_Player2->Update(m_deltaTime, *m_Window);
-    m_Ball->Update(m_deltaTime, *m_Window, *m_Player1, *m_Player2);
+    m_Player1->Update(m_DeltaTime, *m_Window);
+    m_Player2->Update(m_DeltaTime, *m_Window);
+    m_Ball->Update(m_DeltaTime, *m_Window, *m_Player1, *m_Player2);
     CheckBallEscape();
 }
 
@@ -112,9 +123,7 @@ void PongGame::AddScore(Player& player)
     {
 	    Player& opponent = (&player == m_Player1) ? *m_Player2 : *m_Player1;
         if (player.m_CurrentScore - opponent.m_CurrentScore >= 2)
-        {
 			ChangeGameState(GameState::GameOver);
-        }
     }
 }
 
@@ -199,32 +208,40 @@ void PongGame::ProcessEvents()
 
 void PongGame::Draw()
 {
-    m_Window->clear();
-	m_Window->setView(m_View);
+	//Draw to render texture depending on game state
+	m_RenderTexture->clear();
     switch (m_GameState)
     {
         case GameState::Menu:
-            m_Window->draw(*m_PromptText);
-			m_Window->draw(*m_TitleText);
+			m_RenderTexture->draw(*m_TitleText);
+			m_RenderTexture->draw(*m_PromptText);
             break;
         case GameState::Running:
-	    	m_Window->draw(*m_ScoreText);
-	    	m_Player1->Draw(*m_Window);
-	    	m_Player2->Draw(*m_Window);
-	    	m_Ball->Draw(*m_Window);
+            m_RenderTexture->draw(*m_ScoreText);
+	    	m_Player1->Draw(*m_RenderTexture);
+	    	m_Player2->Draw(*m_RenderTexture);
+	    	m_Ball->Draw(*m_RenderTexture);
             break;
         case GameState::Paused:
-			m_Window->draw(*m_TitleText);
-			m_Window->draw(*m_PromptText);
+            m_RenderTexture->draw(*m_TitleText);
+            m_RenderTexture->draw(*m_PromptText);
             break;
         case GameState::GameOver:
-			m_Window->draw(*m_TitleText);
-	    	m_Window->draw(*m_ScoreText);
-			m_Window->draw(*m_PromptText);
+            m_RenderTexture->draw(*m_TitleText);
+            m_RenderTexture->draw(*m_ScoreText);
+            m_RenderTexture->draw(*m_PromptText);
             break;
         default:
             break;
     }
+	m_RenderTexture->display();
+
+	//Draw render texture to screen with post-processing shader
+    m_Window->clear();
+    m_Window->setView(m_View);
+    m_PostProcessShader->setUniform("time", m_ScrollingTime);
+    m_PostProcessShader->setUniform("texture", sf::Shader::CurrentTexture);
+    m_Window->draw(sf::Sprite(m_RenderTexture->getTexture()), m_PostProcessShader);
     m_Window->display();
 }
 

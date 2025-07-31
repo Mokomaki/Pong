@@ -6,7 +6,7 @@ class Ball {
 public:
 	Ball(float x, float y, float radius, sf::Color color, float speed);
 	void Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2);
-	void Draw(sf::RenderWindow& window);
+	void Draw(sf::RenderTarget& target);
 	void Reset();
 	sf::Vector2f GetPosition() const { return m_Position; }
 	float GetRadius() const { return m_Radius; }
