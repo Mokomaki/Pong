@@ -36,6 +36,8 @@ project "PongGame"
    filter "system:windows"
        systemversion "latest"
        defines { "WINDOWS", "SFML_STATIC"}
+       files {"PongGame.rc","../Resources/Icon.ico"}
+       vpaths {["Resources/*"] = {"*.rc", "**.ico"}}
 
    filter "configurations:Debug"
        kind "ConsoleApp"
