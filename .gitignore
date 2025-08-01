@@ -2,6 +2,11 @@
 .vs/
 Binaries/
 
+# Generated resource headers
+/PongGame/Source/ResInclude
+/PongGame/Source/PongAssets.cpp
+/PongGame/Source/PongAssets.h
+
 # Files
 *.vcxproj
 *.vcxproj.user

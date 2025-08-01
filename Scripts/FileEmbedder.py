@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 
 asset_names = []
 file_names = []
@@ -25,8 +26,6 @@ def main() -> None:
 
 
 def make_file_embed(out_dir_name : str, file_name : str, file_data : bytearray) -> None:
-    print(f"Embedding file '{file_name}' to '{out_dir_name}'")
-    print("bytes: " + str(len(file_data)))
 
     file_name = file_name.replace(".", "_")
     file_name = file_name.capitalize()
@@ -34,8 +33,8 @@ def make_file_embed(out_dir_name : str, file_name : str, file_data : bytearray) 
     asset_names.append(file_name+ "Embed")
 
     file_string = f'''#pragma once\nnamespace {file_name}Embed {{
-    unsigned int {file_name}EmbedSize = {len(file_data)};
-    unsigned char {file_name}EmbedData [] = 
+    constexpr unsigned int {file_name}EmbedSize = {len(file_data)};
+    constexpr unsigned char {file_name}EmbedData [] = 
     {{\n'''
 
     for i in range(len(file_data)):
@@ -45,6 +44,11 @@ def make_file_embed(out_dir_name : str, file_name : str, file_data : bytearray) 
             file_string += "\n"
 
     file_string += "};\n}\n"
+
+    try:
+        Path.mkdir(out_dir_name + "/ResInclude/", False, False)
+    except  FileExistsError as e:
+        print("/ResInclude/ directory found")
 
     try:
         with open(out_dir_name + "/ResInclude/" + file_name + "Embed.h", "w") as file:
@@ -61,7 +65,7 @@ def write_loader_file(path : str) -> None:
     header_file_string += "\n"
     header_file_string += "namespace PongAssets {\n"
     for asset_name in asset_names:
-        header_file_string += f"unsigned char* Get{asset_name}Data();\n"
+        header_file_string += f"unsigned char const* Get{asset_name}Data();\n"
         header_file_string += f"unsigned int Get{asset_name}Size();\n"
     header_file_string += "}\n"
 
@@ -73,12 +77,13 @@ def write_loader_file(path : str) -> None:
     
     print("Writing PongAssets.cpp")
     # Write source file
+    source_file_string = ""
     for cur_file in file_names:
         source_file_string += f"#include \"ResInclude/{cur_file}\"\n"
-    source_file_string = "#include \"PongAssets.h\"\n"
+    #source_file_string = "#include \"PongAssets.h\"\n"
     source_file_string += "namespace PongAssets {\n"
     for i in range(len(asset_names)):
-        source_file_string += f"unsigned char* Get{asset_names[i]}Data()\n{{\n    return {asset_names[i]}::{asset_names[i]}Data;\n"
+        source_file_string += f"unsigned char const* Get{asset_names[i]}Data()\n{{\n    return {asset_names[i]}::{asset_names[i]}Data;\n"
         source_file_string += "}\n"
         source_file_string += f"unsigned int Get{asset_names[i]}Size()\n{{\n    return {asset_names[i]}::{asset_names[i]}Size;\n"
         source_file_string += "}\n"
@@ -91,7 +96,7 @@ def write_loader_file(path : str) -> None:
         print(f"Failed to write pongassets source file: {e}")
     
     file_names.append("PongAssets.h")
-    #file_names.append("PongAssets.cpp")
+    file_names.append("PongAssets.cpp")
 
 if (__name__ == "__main__"):
         main()
