@@ -2,83 +2,81 @@
 
 PongGame::PongGame()
 {
-    m_Window = new sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title);
+    bool success;
+    
+    //Create window
+    m_Window = std::make_unique<sf::RenderWindow>(sf::RenderWindow(sf::VideoMode({ m_Settings.width, m_Settings.height }), m_Settings.title));
+    if (!m_Window->isOpen())
+        std::cerr << "Failed to create window!" << std::endl;
+
+    //Load icon
     sf::Image icon;
-    icon.loadFromMemory(PongAssets::GetIconimageEmbedData(), PongAssets::GetIconimageEmbedSize());
+    success = icon.loadFromMemory(PongAssets::GetIconimageEmbedData(), PongAssets::GetIconimageEmbedSize());
+    if (!success)
+        std::cerr << "Failed to load icon image!" << std::endl;
     m_Window->setIcon(icon);
-	m_RenderTexture = new sf::RenderTexture();
+
+    //Create rendertexture
+	m_RenderTexture = std::make_unique<sf::RenderTexture>();
     m_RenderTexture->setSmooth(true);
-	m_RenderTexture->resize(sf::Vector2u(m_Settings.width, m_Settings.height));
+	success = m_RenderTexture->resize(sf::Vector2u(m_Settings.width, m_Settings.height));
+    if (!success)
+        std::cerr << "Failed to set size of rendertexture!" << std::endl;
+
+    //Create view
     m_View.setSize(sf::Vector2f((float)m_Settings.width, (float)m_Settings.height));
-	m_View.setCenter(sf::Vector2f(m_Settings.width/2, m_Settings.height/2));
-	m_View = Utilities::ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
+	m_View.setCenter(sf::Vector2f((float)m_Settings.width / 2, (float)m_Settings.height / 2));
+	Utilities::ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
 
-    #include "postprocessingshader.glsl";
-
-    m_PostProcessShader = new sf::Shader();
-    m_PostProcessShader->loadFromMemory(fragmentShader, sf::Shader::Type::Fragment);
+    //Create post-processing shader
+    #include "postprocessingshader.glsl"
+    m_PostProcessShader = std::make_unique<sf::Shader>();
+    success = m_PostProcessShader->loadFromMemory(fragmentShader, sf::Shader::Type::Fragment);
+    if (!success)
+        std::cerr << "Failed to compile post-processing shader!" << std::endl;
 
     InitGameEntities();
 }
 
 void PongGame::InitGameEntities()
 {
-    m_Player1 = new Player
-    (
-        0.1,
-        0.5,
-        m_Settings.playerWidth,
-        m_Settings.playerHeight,
-        sf::Color::White,
-        5.0f,
-        m_Settings.playerSpeed,
-        sf::Keyboard::Key::W,
-        sf::Keyboard::Key::S
-    );
-    m_Player2 = new Player
-    (
-        0.9,
-        0.5,
-        m_Settings.playerWidth,
-        m_Settings.playerHeight,
-        sf::Color::White,
-        5.0f,
-        m_Settings.playerSpeed,
-        sf::Keyboard::Key::Up,
-        sf::Keyboard::Key::Down
-    );
-    m_Ball = new Ball
-    (
-        0.5f,
-        0.5f,
-        m_Settings.ballRadius,
-        sf::Color::White,
-        m_Settings.ballSpeed
-    );
+    //Init entities
+    m_Player1 = std::make_unique<Player>(m_Settings, 0.1f, sf::Keyboard::Key::W, sf::Keyboard::Key::S);
+    m_Player2 = std::make_unique<Player>(m_Settings, 0.9f, sf::Keyboard::Key::Up, sf::Keyboard::Key::Down);
+    m_Ball = std::make_unique<Ball>(m_Settings);
 
-
-
-	m_Music.openFromMemory(PongAssets::GetPongmusicEmbedData(), PongAssets::GetPongmusicEmbedSize());
+    //Load music
+    bool success;
+	success = m_Music.openFromMemory(PongAssets::GetPongmusicEmbedData(), PongAssets::GetPongmusicEmbedSize());
+    if (!success)
+        std::cerr << "Failed to load music!" << std::endl;
     m_Music.setLooping(true);
     m_Music.play();
     
+    //Load score sound
+    success = m_ScoreSoundBuffer.loadFromMemory(PongAssets::GetBallescapesoundEmbedData(), PongAssets::GetBallescapesoundEmbedSize());
+    if (!success)
+        std::cerr << "Failed to load scoring sound!" << std::endl;
+	m_ScoreSound = std::make_unique<sf::Sound>(m_ScoreSoundBuffer);
 
-    m_ScoreSoundBuffer.loadFromMemory(PongAssets::GetBallescapesoundEmbedData(), PongAssets::GetBallescapesoundEmbedSize());
-	m_ScoreSound = new sf::Sound(m_ScoreSoundBuffer);
+    //Load font
+    success = m_Font.openFromMemory(PongAssets::GetObliviousfontEmbedData(), PongAssets::GetObliviousfontEmbedSize());
+    if (!success)
+        std::cerr << "Failed to load font!" << std::endl;
 
-
-    //m_Font.openFromFile("../Resources/ObliviousFont.ttf");
-    m_Font.openFromMemory(PongAssets::GetObliviousfontEmbedData(), PongAssets::GetObliviousfontEmbedSize());
+    //Init score text
     m_ScoreText = new sf::Text(m_Font, "", 30);
     m_ScoreText->setFillColor(sf::Color::White);
 	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: 0      |      Player 2: 0", { 0.5f, 0.05f }, *m_Window);
 
+    //Init title text
     m_TitleText = new sf::Text(m_Font, "", 100);
 	m_TitleText->setStyle(sf::Text::Bold);
 	m_TitleText->setLetterSpacing(4.5f);
 	m_TitleText->setFillColor(sf::Color::White);
 	Utilities::SetTextAndPosition(*m_TitleText, m_Settings.title, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
 
+    //Init prompt text
     m_PromptText = new sf::Text(m_Font, "", 20);
     m_PromptText->setFillColor(sf::Color::White);
 	m_PromptText->setLineSpacing(1.5f);
@@ -89,7 +87,6 @@ void PongGame::InitGameEntities()
 
 PongGame::~PongGame()
 {
-	delete m_Window;
 }
 
 void PongGame::Run()
@@ -124,15 +121,14 @@ void PongGame::UpdateGame()
 
 void PongGame::AddScore(Player& player)
 {
-    player.m_CurrentScore++;
-    
-	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      " + "Player 2: " + std::to_string(m_Player2->m_CurrentScore), { 0.5f, 0.05f }, *m_Window);
+    player.AddScore();
+	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->GetCurrentScore()) + "      |      " + "Player 2: " + std::to_string(m_Player2->GetCurrentScore()), { 0.5f, 0.05f }, *m_Window);
 
 	//Check if game should end
-    if (player.m_CurrentScore >= 11)
+    if (player.GetCurrentScore() >= 11)
     {
-	    Player& opponent = (&player == m_Player1) ? *m_Player2 : *m_Player1;
-        if (player.m_CurrentScore - opponent.m_CurrentScore >= 2)
+	    Player& opponent = (&player == m_Player1.get()) ? *m_Player2 : *m_Player1;
+        if (player.GetCurrentScore() - opponent.GetCurrentScore() >= 2)
 			ChangeGameState(GameState::GameOver);
     }
 	m_ScoreSound->play();
@@ -168,10 +164,9 @@ void PongGame::ProcessEvents()
         if(event->is<sf::Event::Resized>())
         {
             sf::Vector2u newSize = event->getIf<sf::Event::Resized>()->size;
-            m_View = Utilities::ResizeView(m_View, newSize);
+            Utilities::ResizeView(m_View, newSize);
             continue;
 		}
-
 
 		//Key pressed event
         if (event->is<sf::Event::KeyPressed>())
@@ -188,7 +183,7 @@ void PongGame::ProcessEvents()
 		//Key released event
         if (event->is<sf::Event::KeyReleased>())
         {
-			//Pause when escape is pressed
+			//Pause or move to menu when escape is pressed
             if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::Escape)
             {
                 if(m_GameState == GameState::Paused || m_GameState == GameState::GameOver)
@@ -208,7 +203,7 @@ void PongGame::ProcessEvents()
 #ifdef DEBUG
             if (event->getIf<sf::Event::KeyReleased>()->code == sf::Keyboard::Key::A)
             {
-				m_Player1->m_CurrentScore++;
+				m_Player1->AddScore();
                     continue;
             }
 #endif
@@ -217,9 +212,9 @@ void PongGame::ProcessEvents()
     }
 }
 
-void PongGame::Draw()
+void PongGame::Draw() const
 {
-	//Draw to render texture depending on game state
+	//Draw to render texture entities depending on game state
 	m_RenderTexture->clear();
     switch (m_GameState)
     {
@@ -229,9 +224,9 @@ void PongGame::Draw()
             break;
         case GameState::Running:
             m_RenderTexture->draw(*m_ScoreText);
-	    	m_Player1->Draw(*m_RenderTexture);
-	    	m_Player2->Draw(*m_RenderTexture);
-	    	m_Ball->Draw(*m_RenderTexture);
+            m_RenderTexture->draw(*m_Player1);
+            m_RenderTexture->draw(*m_Player2);
+            m_RenderTexture->draw(*m_Ball);
             break;
         case GameState::Paused:
             m_RenderTexture->draw(*m_TitleText);
@@ -242,8 +237,6 @@ void PongGame::Draw()
             m_RenderTexture->draw(*m_ScoreText);
             m_RenderTexture->draw(*m_PromptText);
             break;
-        default:
-            break;
     }
 	m_RenderTexture->display();
 
@@ -252,7 +245,7 @@ void PongGame::Draw()
     m_Window->setView(m_View);
     m_PostProcessShader->setUniform("time", m_ScrollingTime);
     m_PostProcessShader->setUniform("texture", sf::Shader::CurrentTexture);
-    m_Window->draw(sf::Sprite(m_RenderTexture->getTexture()), m_PostProcessShader);
+    m_Window->draw(sf::Sprite(m_RenderTexture->getTexture()), m_PostProcessShader.get());
     m_Window->display();
 }
 
@@ -261,12 +254,14 @@ void PongGame::ChangeGameState(GameState newState)
     switch (newState)
     {
         case GameState::Menu:
+            //Set menu texts
             m_TitleText->setLetterSpacing(m_Settings.wideTitleLetterSpacing);
 			Utilities::SetTextAndPosition(*m_TitleText, m_Settings.title, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
 			Utilities::SetTextAndPosition(*m_PromptText, m_Settings.menuPromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
             m_GameState = GameState::Menu;
 			break;
         case GameState::Running:
+            //Reset entites and texts if last state was not pause
             if (m_GameState == GameState::Paused)
             {
 				m_GameState = GameState::Running;
@@ -275,26 +270,23 @@ void PongGame::ChangeGameState(GameState newState)
 			m_Player1->Reset();
             m_Player2->Reset();
 			m_Ball->Reset();
-
-			Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      " + "Player 2: " + std::to_string(m_Player2->m_CurrentScore), { 0.5f, 0.05f }, *m_Window);
-
+			Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->GetCurrentScore()) + "      |      " + "Player 2: " + std::to_string(m_Player2->GetCurrentScore()), { 0.5f, 0.05f }, *m_Window);
             m_GameState = GameState::Running;
             break;
         case GameState::Paused:
+            //Set pause texts
             m_TitleText->setLetterSpacing(m_Settings.normalTitleLetterSpacing);
 			Utilities::SetTextAndPosition(*m_TitleText, m_Settings.pauseTitleText, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
             Utilities::SetTextAndPosition(*m_PromptText, m_Settings.pausePromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
             m_GameState = GameState::Paused;
             break;
         case GameState::GameOver:
+            //Set gameover texts
 			m_TitleText->setLetterSpacing(m_Settings.normalTitleLetterSpacing);
 			Utilities::SetTextAndPosition(*m_TitleText, m_Settings.gameoverTitleText, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
-			Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->m_CurrentScore) + "      |      " + "Player 2: " + std::to_string(m_Player2->m_CurrentScore), { 0.5f, 0.5f }, *m_Window);
+			Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: " + std::to_string(m_Player1->GetCurrentScore()) + "      |      " + "Player 2: " + std::to_string(m_Player2->GetCurrentScore()), { 0.5f, 0.5f }, *m_Window);
             Utilities::SetTextAndPosition(*m_PromptText, m_Settings.gameOverPromptText, { 0.5f, m_Settings.promptTextPositionY }, *m_Window);
             m_GameState = GameState::GameOver;
             break;
-        default:
-			break;
-
     }
 }

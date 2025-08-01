@@ -9,5 +9,5 @@ namespace Utilities
 
 	void SetTextAndPosition(sf::Text& text, const std::string& str, const sf::Vector2f& position, const sf::RenderWindow& window);
 
-	sf::View ResizeView(sf::View& view, const sf::Vector2u& windowSize);
+	void ResizeView(sf::View& view, const sf::Vector2u& windowSize);
 }

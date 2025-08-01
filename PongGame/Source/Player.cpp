@@ -1,41 +1,42 @@
 #include "Player.h"
 
-Player::Player(float x, float y, float width, float height, sf::Color color, float outlineThickness, float speed, sf::Keyboard::Key upKey, sf::Keyboard::Key downKey)
-	: m_Position(x, y), m_Speed(speed), m_UpKey(upKey), m_DownKey(downKey)
+Player::Player(const PongSettings& settings, float xPosition, sf::Keyboard::Key upKey, sf::Keyboard::Key downKey) 
+	:m_Position(xPosition,0.5f), m_UpKey(upKey), m_DownKey(downKey), m_Speed(settings.playerSpeed)
 {
-	m_HalfHeight = (height + (outlineThickness * 2)) / 2;
-	m_HalfWidth = (width + (outlineThickness * 2)) / 2;
+	m_HalfHeight = (settings.playerHeight + (settings.playerOutlineThickness * 2)) / 2;
+	m_HalfWidth = (settings.playerWidth + (settings.playerOutlineThickness * 2)) / 2;
 
-	m_Shape.setSize({width, height});
+	m_Shape.setSize({ settings.playerWidth, settings.playerHeight });
 	m_Shape.setFillColor(sf::Color::Black);
-	m_Shape.setOutlineThickness(outlineThickness);
-	m_Shape.setOutlineColor(color);
-	m_Shape.setOrigin({ width / 2, height / 2 });
+	m_Shape.setOutlineThickness(settings.playerOutlineThickness);
+	m_Shape.setOutlineColor(sf::Color::White);
+	m_Shape.setOrigin({ m_Shape.getSize().x / 2, m_Shape.getSize().y / 2 });
 }
 
-void Player::Draw(sf::RenderTarget& target)
+void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	int windowHeight = target.getView().getSize().y;
-	int windowWidth = target.getView().getSize().x;
-
-	m_Shape.setPosition({m_Position.x * windowWidth, m_Position.y * windowHeight});
-	target.draw(m_Shape);
+	target.draw(m_Shape, states);
 }
 
-void Player::Update(float deltaTime, sf::RenderWindow& window)
+void Player::Update(float deltaTime, const sf::RenderWindow& window)
 {
+	int windowHeight = (int)window.getView().getSize().y;
+	int windowWidth = (int)window.getView().getSize().x;
+
+	//Move based on input
 	if (sf::Keyboard::isKeyPressed(m_UpKey))
 		m_Position.y -= m_Speed * deltaTime;
 	if (sf::Keyboard::isKeyPressed(m_DownKey))
 		m_Position.y += m_Speed * deltaTime;
 	
 	// Clamp position to stay within the window bounds
-	int windowHeight = window.getView().getSize().y;
 	if (m_Position.y < 0 + m_HalfHeight / windowHeight)
 		m_Position.y = 0 + m_HalfHeight / windowHeight;
 
 	if (m_Position.y > 1 - m_HalfHeight / windowHeight)
 		m_Position.y = 1 - m_HalfHeight / windowHeight;
+
+	m_Shape.setPosition({ m_Position.x * windowWidth, m_Position.y * windowHeight });
 }
 
 void Player::Reset()
