@@ -1,21 +1,24 @@
 #pragma	once
 #include <SFML/Graphics.hpp>
+#include "PongSettings.h"
 
-class Player {
+class Player : public sf::Drawable{
 public:
-	Player(float x, float y, float width, float height, sf::Color color,float outlineThickness, float speed, sf::Keyboard::Key upKey, sf::Keyboard::Key downKey);
-	void Update(float deltaTime, sf::RenderWindow& window);
-	void Draw(sf::RenderTarget& target);
+	Player(const PongSettings& settings, float xPosition , sf::Keyboard::Key upKey, sf::Keyboard::Key downKey);
+	void Update(float deltaTime, const sf::RenderWindow& window);
 	void Reset();
-	sf::Vector2f GetPosition() const { return m_Position; }
-	float GetHalfHeight() const { return m_HalfHeight; }
-	float GetHalfWidth() const { return m_HalfWidth; }
-	sf::FloatRect GetBoundingBox() const {
+	inline sf::Vector2f GetPosition() const { return m_Position; }
+	inline float GetHalfHeight() const { return m_HalfHeight; }
+	inline float GetHalfWidth() const { return m_HalfWidth; }
+	inline unsigned short GetCurrentScore() const { return m_CurrentScore; }
+	inline void AddScore() { m_CurrentScore++; }
+	inline sf::FloatRect GetBoundingBox() const {
 		return sf::FloatRect({ m_Position.x, m_Position.y}, { m_HalfWidth * 2, m_HalfHeight * 2 });
 	}
-public:
-	short m_CurrentScore = 0;
 private:
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+private:
+	unsigned short m_CurrentScore = 0;
 	sf::Vector2f m_Position;
 	sf::RectangleShape m_Shape;
 	float m_HalfHeight;

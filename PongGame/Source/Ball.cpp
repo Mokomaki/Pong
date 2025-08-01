@@ -1,21 +1,21 @@
 #include "Ball.h"
-#include "Utilities.h"
 
-Ball::Ball(float x, float y, float radius, sf::Color color, float speed)
-	: m_Position(x, y), m_Speed(speed), m_Radius(radius), m_CurrentSpeed(speed)
+Ball::Ball(const PongSettings& settings)
+	: m_Position(0.5f, 0.5f), m_Speed(settings.ballSpeed), m_Radius(settings.ballRadius), m_CurrentSpeed(settings.ballSpeed)
 {
-
-	m_Shape.setRadius(radius);
+	m_Shape.setRadius(m_Radius);
 	m_Shape.setFillColor(sf::Color::Black);
-	m_Shape.setOutlineColor(color);
+	m_Shape.setOutlineColor(sf::Color::White);
 	m_Shape.setOutlineThickness(5.0f);
-	m_Shape.setOrigin({ radius, radius });
+	m_Shape.setOrigin({ m_Radius, m_Radius });
 
 	m_Direction = GetRandomDirection();
 
-	m_BallHitBuffer.loadFromMemory(PongAssets::GetBallhitsoundEmbedData(), PongAssets::GetBallhitsoundEmbedSize());
-	//m_BallHitBuffer.loadFromFile("../Resources/ballhit.ogg");
-	m_BallHitSound = new sf::Sound(m_BallHitBuffer);
+	//Load ball hit sound
+	bool success = m_BallHitBuffer.loadFromMemory(PongAssets::GetBallhitsoundEmbedData(), PongAssets::GetBallhitsoundEmbedSize());
+	if (!success)
+		std::cerr << "Failed to load ball collision sound!" << std::endl;
+	m_BallHitSound = std::make_unique<sf::Sound>(m_BallHitBuffer);
 }
 
 sf::Vector2f Ball::GetRandomDirection() 
@@ -37,25 +37,22 @@ void Ball::Reset()
 	m_CurrentSpeed = m_Speed;
 }
 
-void Ball::Draw(sf::RenderTarget& target)
+void Ball::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	int windowHeight = target.getView().getSize().y;
-	int windowWidth = target.getView().getSize().x;
-
-	m_Shape.setPosition({ m_Position.x * windowWidth, m_Position.y * windowHeight });
-	target.draw(m_Shape);
+	target.draw(m_Shape, states);
 }
 
 void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2)
 {
+	int windowHeight = (int)window.getView().getSize().y;
+	int windowWidth = (int)window.getView().getSize().x;
+
 	m_CurrentSpeed += m_Acceleration * deltaTime;
 
 	m_Position.y += m_CurrentSpeed * m_Direction.y * deltaTime;
 	m_Position.x += m_CurrentSpeed * m_Direction.x * deltaTime;
 
 	// Clamp position to stay within the window bounds
-	int windowHeight = window.getView().getSize().y;
-	int windowWidth = window.getView().getSize().x;
 	if (m_Position.y < 0 + m_Radius / windowHeight || m_Position.y > 1 - m_Radius / windowHeight)
 	{
 		m_BallHitSound->play();
@@ -93,4 +90,5 @@ void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& p
 			m_BallHitSound->play();
 		}
 	}
+	m_Shape.setPosition({ m_Position.x * windowWidth, m_Position.y * windowHeight });
 }
