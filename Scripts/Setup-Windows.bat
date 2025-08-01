@@ -2,7 +2,7 @@
 
 echo Generating resource embedding code
 pushd ..
-py Scripts/FileEmbedder.py Resources/ PongGame/Source/
+py Scripts/FileEmbedder.py Resources/Embeds/ PongGame/Source/
 popd
 
 echo Running Premake
