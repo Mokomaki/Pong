@@ -65,19 +65,19 @@ void PongGame::InitGameEntities()
         std::cerr << "Failed to load font!" << std::endl;
 
     //Init score text
-    m_ScoreText = new sf::Text(m_Font, "", 30);
+    m_ScoreText = std::make_unique<sf::Text>(m_Font, "", 30);
     m_ScoreText->setFillColor(sf::Color::White);
 	Utilities::SetTextAndPosition(*m_ScoreText, "Player 1: 0      |      Player 2: 0", { 0.5f, 0.05f }, *m_Window);
 
     //Init title text
-    m_TitleText = new sf::Text(m_Font, "", 100);
+    m_TitleText = std::make_unique<sf::Text>(m_Font, "", 100);
 	m_TitleText->setStyle(sf::Text::Bold);
 	m_TitleText->setLetterSpacing(4.5f);
 	m_TitleText->setFillColor(sf::Color::White);
 	Utilities::SetTextAndPosition(*m_TitleText, m_Settings.title, { 0.5f, m_Settings.topTitlePositionY }, *m_Window);
 
     //Init prompt text
-    m_PromptText = new sf::Text(m_Font, "", 20);
+    m_PromptText = std::make_unique<sf::Text>(m_Font, "", 20);
     m_PromptText->setFillColor(sf::Color::White);
 	m_PromptText->setLineSpacing(1.5f);
     m_PromptText->setOrigin({ 0.5f * m_TitleText->getLocalBounds().size.x, 0.5f * m_TitleText->getLocalBounds().size.y });

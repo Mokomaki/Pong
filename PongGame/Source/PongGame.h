@@ -47,9 +47,9 @@ private:
 	sf::SoundBuffer m_ScoreSoundBuffer;
 	std::unique_ptr<sf::Sound> m_ScoreSound;
 	sf::Font m_Font;
-	sf::Text* m_ScoreText;
-	sf::Text* m_TitleText;
-	sf::Text* m_PromptText;
+	std::unique_ptr<sf::Text> m_ScoreText;
+	std::unique_ptr<sf::Text> m_TitleText;
+	std::unique_ptr<sf::Text> m_PromptText;
 	std::unique_ptr<Player> m_Player1;
 	std::unique_ptr<Player> m_Player2;
 	std::unique_ptr<Ball> m_Ball;
