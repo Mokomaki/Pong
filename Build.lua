@@ -3,6 +3,7 @@ workspace "Pong"
    architecture "x64"
    configurations { "Debug", "Release"}
    startproject "PongGame"
+   flags("MultiProcessorCompile")
 
    -- Workspace-wide build options for MSVC
    filter "system:windows"
