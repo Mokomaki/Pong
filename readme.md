@@ -13,7 +13,7 @@ Technologies:
 - Audacity
 - BoscaCeoilBlue
 
-![pong titlescreen](ReadmeImages/pongstart.gif)
+![pong titlescreen](ReadmeImages/Pongstart.gif)
 
 ![pong gamplay](ReadmeImages/ponggame.png)
 
