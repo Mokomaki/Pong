@@ -3,7 +3,7 @@
 Binaries/
 
 # Generated resource headers
-PongGame/Source/ResInclude/
+PongGame/Source/ResInclude/*
 
 # Files
 *.vcxproj
