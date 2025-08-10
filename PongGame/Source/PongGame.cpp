@@ -24,8 +24,8 @@ PongGame::PongGame()
         std::cerr << "Failed to set size of rendertexture!" << std::endl;
 
     //Create view
-    m_View.setSize(sf::Vector2f((float)m_Settings.width, (float)m_Settings.height));
-	m_View.setCenter(sf::Vector2f((float)m_Settings.width / 2, (float)m_Settings.height / 2));
+    m_View.setSize(sf::Vector2f(static_cast<float>(m_Settings.width), static_cast<float>(m_Settings.height)));
+	m_View.setCenter(sf::Vector2f(static_cast<float>(m_Settings.width) / 2, static_cast<float>(m_Settings.height)/2));
 	Utilities::ResizeView(m_View, sf::Vector2u(m_Settings.width,m_Settings.height));
 
     //Create post-processing shader

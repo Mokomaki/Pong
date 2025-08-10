@@ -20,8 +20,8 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Player::Update(float deltaTime, const sf::RenderWindow& window)
 {
-	int windowHeight = (int)window.getView().getSize().y;
-	int windowWidth = (int)window.getView().getSize().x;
+	int windowHeight = static_cast<int>(window.getView().getSize().y);
+	int windowWidth = static_cast<int>(window.getView().getSize().x);
 
 	//Move based on input
 	if (sf::Keyboard::isKeyPressed(m_UpKey))

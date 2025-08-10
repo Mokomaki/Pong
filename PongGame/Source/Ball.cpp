@@ -44,8 +44,8 @@ void Ball::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Ball::Update(float deltaTime,const sf::RenderWindow& window,const Player& player1,const Player& player2)
 {
-	int windowHeight = (int)window.getView().getSize().y;
-	int windowWidth = (int)window.getView().getSize().x;
+	int windowHeight = static_cast<int>(window.getView().getSize().y);
+	int windowWidth = static_cast<int>(window.getView().getSize().x);
 
 	m_CurrentSpeed += m_Acceleration * deltaTime;
 

@@ -38,7 +38,7 @@ namespace Utilities
 
 	void ResizeView(sf::View& view, const sf::Vector2u& newSize)
 	{
-		float windowRatio = (float)newSize.x / (float)newSize.y;
+		float windowRatio = static_cast<float>(newSize.x) / static_cast<float>(newSize.y);
 		float viewRatio = view.getSize().x / view.getSize().y;
 		float sizeX = 1;
 		float sizeY = 1;
