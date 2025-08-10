@@ -50,8 +50,11 @@ def make_file_embed(out_dir_name : str, file_name : str, file_data : bytearray) 
     except  FileExistsError as e:
         print("/ResInclude/ directory found")
 
+    resincl_path = r"\ResInclude\\"
+    res_path = os.path.join(out_dir_name, resincl_path)
+
     try:
-        with open(out_dir_name + "/ResInclude/" + file_name + "Embed.h", "w") as file:
+        with open(res_path + file_name + "Embed.h", "w") as file:
             file.write(file_string)
             file_names.append(file_name + "Embed.h")
     except Exception as e:
