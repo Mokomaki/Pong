@@ -6,7 +6,9 @@ namespace Utilities
 {
 	float Clamp(float value, float min, float max)
 	{
-		return (value > max) ? max : min;
+		if (value < min) return min;
+		if (value > max) return max;
+		return value;
 	}
 
 	sf::Vector2f CircleAABBCollision(const sf::Vector2f& circleCenter,float radius, const sf::FloatRect& aabb)
